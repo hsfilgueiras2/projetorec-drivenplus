@@ -1,14 +1,16 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link, Navigate } from "react-router-dom";
-import { useState,useEffect } from 'react';
+import { useState,useEffect, useContext } from 'react';
 import axios from 'axios';
 import { Redirect } from 'react-router-dom';
 import { useNavigate } from 'react-router-dom';
 import logo from "./assets/imgs/DrivenPlusLogo.png";
+import { UserInfoContext } from './assets/contexts/UserInfoContext';
 
 
-export default function LoginScreen({setUserInfo}){
+export default function LoginScreen(){
+    const {setUserInfo} = useContext(UserInfoContext);
     const [sentRequest, setSentRequest] = useState(false)
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
@@ -21,18 +23,27 @@ export default function LoginScreen({setUserInfo}){
                 email: email,
                 password:password
             })
-            registration.then(promessa=>{handleResponse(promessa)})
-            registration.catch((error)=>{setSentRequest(false)})
+            registration.then(promessa=>{console.log("PROMESSA");console.log(promessa);handleResponse(promessa)})
+            registration.catch((error)=>{console.log("ERRO");console.log(error);setSentRequest(false)})
 	    }}, [sentRequest]);
 
     function handleResponse(response){
         setUserInfo({email:response.data.email,
         id:response.data.id,
-        image:response.data.image,
+        cpf:response.data.cpf,
         name:response.data.name,
         password:response.data.password,
-        token:response.data.token})
-        navigate(`/hoje`)
+        membership:response.data.password,
+        token:response.data.token});
+        if(response.data.membership == null)
+        {
+            navigate(`/subscriptions`)
+        }
+        else{
+            navigate(`/subscriptions/${response.data.membership.id}}`)
+        }
+        
+        
         
     }
     return(

@@ -23,7 +23,7 @@ export default function SignUp() {
                 password:password
             })
             registration.then(promessa=>{console.log("PEGO NO THEN \n");console.log(promessa);navigate(`/`)})
-            registration.catch(error=>{console.log("PEGO NO CATCH");console.log(error.response.data.message);setSentRequest(false)})
+            registration.catch(error=>{console.log("PEGO NO CATCH");console.log(error.response.data.message)})
 	    }}, [sentRequest]);
 
     if(sentRequest ===true){
