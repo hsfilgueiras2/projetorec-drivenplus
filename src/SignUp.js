@@ -11,21 +11,27 @@ export default function SignUp() {
     const [password, setPassword] = useState("")
     const [name, setName] = useState("")
     const [cpf, setCpf] = useState("")
-    useEffect(() => {
-        console.log(sentRequest)
-        if (sentRequest ===false){}
-        else{
-		const registration = axios.post("https://mock-api.driven.com.br/api/v4/driven-plus/auth/sign-up",
+    function sendRegistration(e){
+
+        e.preventDefault();
+        setSentRequest(true);
+        const registration = axios.post("https://mock-api.driven.com.br/api/v4/driven-plus/auth/sign-up",
             {
                 email: email,
                 name: name,
                 cpf:cpf,
                 password:password
             })
-            registration.then(promessa=>{console.log("PEGO NO THEN \n");console.log(promessa);navigate(`/`)})
-            registration.catch(error=>{console.log("PEGO NO CATCH");console.log(error.response.data.message)})
-	    }}, [sentRequest]);
-
+            registration.then(promessa=>{
+                setSentRequest(false);
+                navigate(`/`)
+                
+        })
+            registration.catch(error=>{
+                setSentRequest(false);
+                alert(error.response.data.message);
+        })
+    }
     if(sentRequest ===true){
         return(
             <h1>LOADING</h1>
@@ -33,22 +39,22 @@ export default function SignUp() {
     }
     return (
         <RegisterStyled>
-            <input placeholder='email' value={email} onChange={(e)=>setEmail(e.target.value)}>
+            <input placeholder='email' required value={email} onChange={(e)=>setEmail(e.target.value)}>
             </input>
-            <input placeholder='senha' value={password} onChange={(e)=>setPassword(e.target.value)}>
+            <input placeholder='senha' type="password" required value={password} onChange={(e)=>setPassword(e.target.value)}>
             </input>
-            <input placeholder='nome' value={name} onChange={(e)=>setName(e.target.value)}>
+            <input placeholder='nome' required value={name} onChange={(e)=>setName(e.target.value)}>
             </input>
-            <input placeholder='cpf' value={cpf} onChange={(e)=>setCpf(e.target.value)}>
+            <input placeholder='cpf' required value={cpf} onChange={(e)=>setCpf(e.target.value)}>
             </input>
-            <button onClick={()=>{setSentRequest(true)}}>Cadastrar</button>
+            <button type='submit' onClick={(e)=>{sendRegistration(e)}}>Cadastrar</button>
             <Link to={"/"}>
             <p>Já tem uma conta? Entre</p>
             </Link>
         </RegisterStyled>
     )
 }
-const RegisterStyled = styled.div`
+const RegisterStyled = styled.form`
 padding-top:147px;
 min-height:100%;
 background: #0E0E13;

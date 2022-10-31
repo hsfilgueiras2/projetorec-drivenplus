@@ -15,45 +15,69 @@ export default function LoginScreen(){
     const [email, setEmail] = useState("")
     const [password, setPassword] = useState("")
     const navigate =useNavigate();
-    useEffect(() => {
-        if (sentRequest ===false){}
+    const localUserInfo = JSON.parse(localStorage.getItem("userInfo"))
+    if (localUserInfo != null)
+    {
+        setUserInfo({email:localUserInfo.email,
+        id:localUserInfo.id,
+        cpf:localUserInfo.cpf,
+        name:localUserInfo.name,
+        password:localUserInfo.password,
+        membership:localUserInfo.membership,
+        token:localUserInfo.token});
+        if(localUserInfo.membership == null)
+        {
+            navigate(`/subscriptions`)
+        }
         else{
-		const registration = axios.post("https://mock-api.driven.com.br/api/v4/driven-plus/auth/login",
-            {
-                email: email,
-                password:password
-            })
-            registration.then(promessa=>{console.log("PROMESSA");console.log(promessa);handleResponse(promessa)})
-            registration.catch((error)=>{console.log("ERRO");console.log(error);setSentRequest(false)})
-	    }}, [sentRequest]);
-
+            navigate(`/home`)
+        }
+    }
+    function sendRequest(event){
+        event.preventDefault();
+        const request = axios.post("https://mock-api.driven.com.br/api/v4/driven-plus/auth/login",
+        {
+            email: email,
+            password:password
+        })
+        request.then(promessa=>{console.log("PROMESSA");console.log(promessa);handleResponse(promessa)})
+        request.catch((error)=>{console.log("ERRO");alert(error.response.data.message);})
+    }
     function handleResponse(response){
         setUserInfo({email:response.data.email,
         id:response.data.id,
         cpf:response.data.cpf,
         name:response.data.name,
         password:response.data.password,
-        membership:response.data.password,
+        membership:response.data.membership,
         token:response.data.token});
+        localStorage.setItem("userInfo", JSON.stringify({
+            email:response.data.email,
+            id:response.data.id,
+            cpf:response.data.cpf,
+            name:response.data.name,
+            password:response.data.password,
+            membership:response.data.membership,
+            token:response.data.token}))
         if(response.data.membership == null)
         {
             navigate(`/subscriptions`)
         }
         else{
-            navigate(`/subscriptions/${response.data.membership.id}}`)
+            navigate(`/home`)
         }
         
         
         
     }
     return(
-    <LoginStyled>
+    <LoginStyled >
         <img src={logo}></img>
-        <input placeholder='email' value={email} onChange={(e)=>setEmail(e.target.value)}>
+        <input placeholder='email' required value={email} onChange={(e)=>setEmail(e.target.value)}>
         </input>
-        <input placeholder='senha' value={password} onChange={(e)=>setPassword(e.target.value)}>
+        <input placeholder='senha' type="password" required value={password} onChange={(e)=>setPassword(e.target.value)}>
         </input>
-        <button onClick={()=>{setSentRequest(true)}}>Entrar</button>
+        <button type='submit' onClick={(e)=>{sendRequest(e)}}>Entrar</button>
 
         <Link to={`/sign-up`}>
         <p>Não tem uma conta? Cadastre-se!</p>
@@ -61,7 +85,7 @@ export default function LoginScreen(){
         
     </LoginStyled>)
 }
-const LoginStyled = styled.div`
+const LoginStyled = styled.form`
 box-sizing: border-box;
 img{
     height:49px;
